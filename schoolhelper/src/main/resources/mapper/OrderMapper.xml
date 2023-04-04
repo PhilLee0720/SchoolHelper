@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.schoolhelper.dao.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.Order">
+        <result property="id" column="id"></result>
+        <result property="orderSerial" column="order_serial"></result>
+        <result property="orderMain" column="order-main"></result>
+        <result property="orderDesc" column="order_desc"></result>
+        <result property="orderNote" column="order_notes"></result>
+        <result property="orderCheckState" column="order_check_state"/>
+        <result property="orderTransState" column="order_transaction_state"/>
+        <result property="orderPrice" column="order_price"></result>
+        <result property="beginTime" column="begin_time"></result>
+        <result property="doAddress" column="do_address"></result>
+        <result property="sendAddress" column="send_address"></result>
+        <result property="goodsWeight" column="goods_weight"></result>
+        <result property="phoneNumber" column="phone_number"></result>
+        <result property="createTime" column="create_time"></result>
+        <association property="category" column="category_id" javaType="com.lee.schoolhelper.entity.Category">
+            <result property="categoryName" column="category_name"/>
+        </association>
+        <association property="releasedUser" column="com.lee.schoolhelper.entity.User" javaType="com.lee.schoolhelper.entity.User">
+            <result property="userNickName" column="user_nick_name"/>
+        </association>
+    </resultMap>
+    <select id="getOrderById" resultMap="BaseResultMap" parameterType="int">
+        SELECT * FROM `order`  AS o
+                          LEFT JOIN category AS c ON
+            o.category_id = c.id
+                          LEFT JOIN `user` AS u ON
+            o.released_user_id = u.id WHERE o.id = #{orderId};
+    </select>
+    <select id="getAllOrder" resultType="com.lee.schoolhelper.entity.Order">
+        select * from `order` where `order_transaction_state` = 0;
+    </select>
+    <insert id="addOrder" parameterType="com.lee.schoolhelper.entity.Order" useGeneratedKeys="true" keyProperty="order.id">
+        INSERT INTO `order`(order_serial,`order_main`,`order_desc`,`order_notes`,
+                            `order_check_state`,`order_transaction_state`,
+                            `order_price`,`released_user_id`,
+                            `begin_time`,`do_address`,`send_address`,`goods_weight`,
+                            `category_id`,`phone_number`)
+        VALUES(#{order.orderSerial},#{order.orderMain},#{order.orderDesc},
+               #{order.orderNote},0,0,#{order.orderPrice},#{releasedUserId},#{order.beginTime},#{order.doAddress},
+               #{order.sendAddress},#{order.goodsWeight},#{categoryId},#{order.phoneNumber});
+    </insert>
+    <resultMap id="OrderCategoryMap" type="com.lee.schoolhelper.entity.Order">
+        <result property="id" column="id"/>
+        <result property="orderMain" column="order_main"/>
+        <result property="createTime" column="create_time"/>
+        <result property="orderCheckState" column="order_check_state"/>
+        <association property="category" column="category_id" javaType="com.lee.schoolhelper.entity.Category">
+            <result property="categoryName" column="category_name"/>
+        </association>
+    </resultMap>
+    <select id="getAllOrderByAcceptedUserId"  resultMap="OrderCategoryMap" parameterType="int">
+        select * from  `order` as o left join `category` as c on o.category_id = c.id where accepted_user_id = #{acceptedUserId};
+    </select>
+
+    <resultMap id="OrderCategoryMap2" type="com.lee.schoolhelper.entity.Order">
+        <result property="id" column="id"/>
+        <result property="orderMain" column="order_main"/>
+        <result property="createTime" column="create_time"/>
+        <result property="orderCheckState" column="order_check_state"/>
+        <result property="orderTransState" column="order_transaction_state"/>
+        <association property="category" column="category_id" javaType="com.lee.schoolhelper.entity.Category">
+            <result property="categoryName" column="category_name"/>
+        </association>
+    </resultMap>
+    <select id="getAllOrderByReleasedUserId" resultMap="OrderCategoryMap2" parameterType="int">
+        select * from  `order` as o left join `category` as c on o.category_id = c.id where released_user_id = #{releasedUserId};
+    </select>
+    <delete id="deleteOrderById" parameterType="int">
+        delete from `order`  where id = #{orderId};
+    </delete>
+    <select id="queryOrderByCategoryId" parameterType="int" resultType="com.lee.schoolhelper.entity.Order">
+        select * from `order` where category_id = #{categoryId};
+    </select>
+    <select id="searchOrder" parameterType="string" resultType="com.lee.schoolhelper.entity.Order">
+        select * from `order` where  `order_main` like "%"#{content}"%";
+    </select>
+    <update id="acceptOrder" parameterType="int">
+        update `order`  set `accepted_user_id` = #{userId},`order_transaction_state` = 1, where id = #{orderId} and order_transaction_state = 0;
+    </update>
+    <update id="finishOrder" parameterType="int">
+        update `order` set `order_transaction_state` = 2 where id = #{orderId};
+    </update>
+    <select id="getTransState" parameterType="int" resultType="int">
+        select `order_transaction_state` from `order` where id = #{orderId};
+    </select>
+    <resultMap id="AROMap" type="com.lee.schoolhelper.entity.Order">
+        <result property="id" column="id"/>
+        <result property="orderSerial" column="order_serial"/>
+        <result property="orderMain" column="order_main"/>
+        <result property="orderDesc" column="order_desc"/>
+        <result property="orderNote" column="order_notes"/>
+        <result property="orderCheckState" column="order_check_state"/>
+        <result property="orderTransState" column="order_transaction_state"/>
+        <result property="orderPrice" column="order_price"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <association property="releasedUser"  javaType="com.lee.schoolhelper.entity.User" column="released_user_id">
+            <result property="userAccount" column="user_account"/>
+        </association>
+        <association property="acceptedUser" javaType="com.lee.schoolhelper.entity.User" column="accepted_user_id">
+            <result property="userAccount" column="user_account"/>
+        </association>
+    </resultMap>
+    <select id="getOrderPage" resultMap="AROMap">
+         select * from `order` as o
+             left join `user` as u on  o.released_user_id = u.id
+              left join `user` as u1 on o.accepted_user_id = u1.id;
+    </select>
+    <select id="getOrderNumber" resultType="int">
+        select count(*)  from `order`;
+    </select>
+
+    <select id="getOrderByOrderSerial" resultMap="AROMap">
+        select * from `order` where order_serial = #{orderSerial};
+    </select>
+
+    <update id="updateOrderCheckState" >
+        update `order` set order_check_state  = 1 where id = #{orderId};
+    </update>
+</mapper>

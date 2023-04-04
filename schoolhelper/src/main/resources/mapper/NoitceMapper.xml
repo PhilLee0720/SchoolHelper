@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.schoolhelper.dao.NoticeMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.Notice">
+        <result property="id" column="id"/>
+        <result property="noticeContent" column="notice_content"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <select id="getAllNotice" resultMap="BaseResultMap">
+        select * from notice;
+    </select>
+    <select id="getNoticeByPage" resultMap="BaseResultMap">
+        select * from notice
+    </select>
+    <select id="getNoticeCount" resultType="int">
+        select count(*) from notice;
+    </select>
+    <select id="getNoticePage" resultMap="BaseResultMap">
+        select * from `notice`;
+    </select>
+    <select id="getNoticeNumber" resultType="int">
+        select count(1) from `notice`;
+    </select>
+    <insert id="addNotice" parameterType="com.lee.schoolhelper.entity.Notice">
+        insert into `notice`(notice_content) values (#{noticeContent});
+    </insert>
+</mapper>

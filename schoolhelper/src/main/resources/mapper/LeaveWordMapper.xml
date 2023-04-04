@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.schoolhelper.dao.LeaveWordMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.LeaveWord">
+        <result property="id" column="id"/>
+        <result property="leaveWordContent" column="leave_word_content"/>
+        <result property="createTime" column="create_time"/>
+        <association property="releasedUser" column="user_id" javaType="com.lee.schoolhelper.entity.User">
+            <result property="userNickName" column="user_nick_name"/>
+            <result property="userAccount" column="userAccount"/>
+        </association>
+    </resultMap>
+    <select id="getLeaveWordByPage" resultMap="BaseResultMap">
+        select * from leave_word as lw right join  user as u on lw.user_id = u.id order by lw.create_time desc;
+  </select>
+    <select id="getTotal" resultType="int">
+        select count(id) from leave_word;
+    </select>
+    <insert id="addLeaveWord"  parameterType="com.lee.schoolhelper.entity.LeaveWord" useGeneratedKeys="true" keyProperty="leaveWord.id">
+        insert into leave_word(leave_word_content,user_id) values (#{leaveWord.leaveWordContent},#{userId})
+    </insert>
+    <delete id="removeLeaveWord" parameterType="int">
+        delete  from `leave_word` where id = #{leaveWordId};
+    </delete>
+
+</mapper>

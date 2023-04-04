@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.schoolhelper.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.User">
+        <result property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userNickName" column="user_nick_name"/>
+        <result property="gender" column="gender"/>
+        <result property="institute" column="institute"/>
+        <result property="grade" column="grade"/>
+        <result property="speciality" column="speciality"/>
+        <result property="classNumber" column="user_class"/>
+        <result property="userAccount" column="user_account"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="phoneNumber" column="phone_number"/>
+    </resultMap>
+    <select id="getUserById" resultMap="BaseResultMap">
+        select * from user where id = #{userId};
+    </select>
+    <insert id="addUser" parameterType="com.lee.schoolhelper.entity.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user(user_icon,user_name,
+                         user_nick_name,
+                         gender,institute,
+                         grade,speciality,
+                         user_class,user_account,
+                         user_password,`state`,
+                         create_time,
+                         update_time,
+                         phone_number)
+                         values(#{userIcon},#{userName},
+                                #{userNickName},
+                                #{gender},#{institute},#{grade},#{speciality},
+                                #{classNumber},#{userAccount},
+                                #{userPassword},#{state},#{createTime},
+                                #{updateTime},#{phoneNumber});
+    </insert>
+    <delete id="deleteUserById" parameterType="int">
+        delete from `user` where id = #{userId}
+    </delete>
+    <select id="countUserByAccount" parameterType="string" resultType="int">
+        select count(*) from `user` where user_account = #{userAccount};
+    </select>
+    <select id="getUserByAccount" parameterType="string" resultType="com.lee.schoolhelper.entity.User">
+        select * from `user` where user_account = #{userAccount}
+    </select>
+    <select id="getUserId" parameterType="string" resultType="int">
+        select `id` from user where user_nick_name = #{userNickName};
+    </select>
+    <update id="updateUserById" parameterType="com.lee.schoolhelper.entity.User">
+        update `user` set user_name = #{user.userName}, user_nick_name = #{user.userNickName},
+                          gender = #{user.gender}, institute = #{user.institute}, speciality = #{user.speciality},
+                          user_class=#{user.classNumber},update_time = #{user.updateTime},grade = #{user.grade} where
+                          id = #{userId};
+    </update>
+    <update id="updateUserPassword">
+        update `user` set `user_password`= #{password} where id = #{id};
+    </update>
+    <select id="getUserByOrderId" parameterType="int" resultMap="BaseResultMap">
+        select * from  `user` as u
+            left join `order` as o
+                on u.id = o.accepted_user_id where o.id = #{orderId};
+    </select>
+    <select id="getAllUser"  resultMap="BaseResultMap">
+        select * from `user`;
+    </select>
+
+    <select id="getUserNumber" resultType="int">
+        select count(*) from `user`;
+    </select>
+
+    <select id="getUserPage" resultMap="BaseResultMap">
+        select * from `user`;
+    </select>
+    <update id="updateUserStateById" parameterType="int">
+        update `user` set role = 1 where id = #{userId};
+    </update>
+    <select id="searchUser" parameterType="string" resultMap="BaseResultMap">
+        select * from `user` where user_account = #{searchContent};
+    </select>
+</mapper>

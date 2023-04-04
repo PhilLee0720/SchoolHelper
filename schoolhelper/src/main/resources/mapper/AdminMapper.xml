@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.springcloud.dao.PaymentMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.Admin">
+        <result property="id" column="id"/>
+        <result property="admName" column="admAccount"/>
+        <result property="admAccount" column="adm_account"/>
+        <result property="admPassword" column="adm_password"/>
+        <result property="admPhoneNumber" column="adm_phone_number"/>
+        <result property="adm_email" column="adm_email"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+    <select id="getAdminByAdminAccount" resultType="com.lee.schoolhelper.entity.Admin">
+        select * from `admin` where adm_name = #{admAccount};
+    </select>
+</mapper>

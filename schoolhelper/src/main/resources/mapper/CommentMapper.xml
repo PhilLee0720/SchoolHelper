@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lee.schoolhelper.dao.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.lee.schoolhelper.entity.Comment">
+        <result property="id" column="id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <insert id="addComment" parameterType="com.lee.schoolhelper.dao.CommentMapper" useGeneratedKeys="true" keyProperty="comment.id">
+        INSERT INTO `comment`(comment_content,relese_user_id,order_id,accpeted_user_id) VALUES(#{comment.commentContent},#{releasedUserId},#{orderId},#{acceptedUserId})
+    </insert>
+    <select id="getCommentByOrderId" parameterType="int" resultMap="BaseResultMap">
+        select  * from `comment` where `order_id` = #{orderId};
+    </select>
+    <resultMap id="CommentUserMap" type="com.lee.schoolhelper.entity.Comment">
+        <result property="id" column="id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="createTime" column="create_time"/>
+        <association property="acceptedUser" select="getUser" javaType="com.lee.schoolhelper.entity.User" column="accpeted_user_id">
+            <result property="userNickName" column="user_nick_name"/>
+        </association>
+    </resultMap>
+    <select id="getCommentByUserId" parameterType="int" resultMap="CommentUserMap">
+        select * from `comment` where accpeted_user_id = #{userId}
+    </select>
+    <select id="getUser" parameterType="int" resultType="com.lee.schoolhelper.entity.User">
+        select * from `user` where id = #{accpeted_user_id}
+    </select>
+    <delete id="deleteCommentById" parameterType="int">
+        delete from `comment` where id = #{commentId};
+    </delete>
+    <resultMap id="CommentUserRMap" type="com.lee.schoolhelper.entity.Comment">
+        <result property="id" column="id"/>
+        <result property="commentContent" column="comment_content"/>
+        <result property="createTime" column="create_time"/>
+        <association property="releasedUser" column="relese_user_id" javaType="com.lee.schoolhelper.entity.User">
+            <result property="userAccount" column="user_account"/>
+        </association>
+    </resultMap>
+    <select id="getCommentPage" resultMap="CommentUserRMap">
+        select * from `comment` as c left join `user` as u on c.relese_user_id = u.id;
+    </select>
+    <select id="getCommentNumber" resultType="int">
+        select count(*) from `comment` ;
+    </select>
+    <select id="getCommentLike" resultMap="CommentUserRMap">
+        select * from `comment` where comment_content like "%"#{content}"%";
+    </select>
+</mapper>
